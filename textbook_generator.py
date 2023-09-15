@@ -1,3 +1,4 @@
+import os
 import hashlib
 import pandas as pd
 from vllm import LLM, SamplingParams
