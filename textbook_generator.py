@@ -525,7 +525,7 @@ def main(
     top_p=0.9,
     top_k=40,
     max_tokens=1_024,
-    chunk_size=1,
+    chunk_size=16,
     run_name="run_0",
 ):
     """Run the textbook generator."""
@@ -542,6 +542,8 @@ def main(
     }
 
     chunk_num = 1
+    llm = LLM(model=model)
+
     while True:  # Perpetual loop
         for _ in range(batch_size):
             # Random selections
@@ -574,7 +576,6 @@ def main(
             instructions.append(INSTRUCTION_TEMPLATE.format(instruction=prompt))
             results.append(config)
 
-        llm = LLM(model=model)
         sampling_params = SamplingParams(
             temperature=temperature,
             top_p=top_p,
@@ -588,16 +589,16 @@ def main(
             generated_text = output.outputs[0].text
             results[i]["generated_text"] = generated_text
 
-        def generate_filename(run_name, chunk_num):
+        def generate_filename():
             """Generate a unique filename based on the chunk number and a checksum hash."""
-            hash_string = f"chunk_{run_name}_{chunk_num}"
-            checksum = hashlib.md5(hash_string.encode()).hexdigest()
+            random_bytes = os.urandom(16)  # Generate 16 random bytes
+            checksum = hashlib.md5(random_bytes).hexdigest()
             return f"{run_name}_chunk_{chunk_num}_{checksum}.parquet"
 
         # If chunk size is reached, save results and clear the results list
         if len(results) >= chunk_size:
             df = pd.DataFrame(results)
-            filename = generate_filename(run_name, chunk_num)
+            filename = generate_filename()
             df.to_parquet(filename, index=False, compression="gzip")
             chunk_num += 1
             results.clear()
