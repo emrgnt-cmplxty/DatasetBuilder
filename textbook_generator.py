@@ -1,3 +1,5 @@
+import hashlib
+import pandas as pd
 from vllm import LLM, SamplingParams
 import random
 
@@ -30,8 +32,7 @@ PROGRAMMING_PARADIGMS = [
 ]
 
 ADDITIONAL_CONTEXT = [
-    ""
-    " Also, mention one real-world application where this concept is critical.",
+    "" " Also, mention one real-world application where this concept is critical.",
     " Additionally, discuss a potential pitfall or misconception associated with this concept.",
     " Also, highlight its benefits over the alternative approach.",
     " Also, compare this concept with its predecessor.",
@@ -68,7 +69,9 @@ PROMPT_TEMPLATES = [
     "There are {course_type} courses touching upon {programming_paradigm} paradigm which discuss {concept}. What is it, {depth}? Also, provide a relevant Python example.",
     "Often {course_type} courses touch upon {programming_paradigm} paradigm in Python often discuss {concept}. Can you think of a related concept and explain it {depth}? Also, provide a relevant Python example.",
     "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore the topic of {concept} {depth} and provide practical Python examples.",
+    "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore a related but different {concept} {depth} and provide practical Python examples.",
     "With a focus on {programming_paradigm} paradigm, how would you introduce the topic of {concept} in a {course_type} course? Break it down {depth}.",
+    "With a focus on {programming_paradigm} paradigm, how would you introduce a different but related concept to {concept} to our {course_type} course? Break it down {depth}.",
 ]
 
 CONCEPTS = [
@@ -172,6 +175,19 @@ CONCEPTS = [
     "forecasting",
     "confidence intervals",
     "hypothesis testing",
+    # Mathematics and Statistics:
+    "Calculus: limits and continuity",
+    "Statistics: Chi-squared tests",
+    "Statistics: ANOVA",
+    "Statistics: t-tests",
+    "Statistics: correlation coefficients (Pearson, Spearman)",
+    "Number Theory: Fermat's Little Theorem",
+    "Number Theory: Euler's Totient Function",
+    "Linear Algebra: Orthogonality",
+    "Linear Algebra: Gram-Schmidt process",
+    "Linear Algebra: Singular Value Decomposition (SVD)",
+    "Discrete Mathematics: Pigeonhole principle",
+    "Discrete Mathematics: Inclusion-exclusion principle",
     # Extended Introductory Algebra/Mathematics/Statistics:
     "advanced algebra: matrix operations",
     "advanced algebra: eigenvalues and eigenvectors",
@@ -370,6 +386,125 @@ CONCEPTS = [
     "Suffix tree and Suffix array",
     "NP-completeness and reductions",
     "Approximation algorithms",
+    # Python-Specific:
+    "Python libraries: NetworkX",
+    "Python libraries: statsmodels",
+    "Python advanced topics: Generators",
+    "Python advanced topics: context managers",
+    "Python advanced topics: asyncio",
+    "Python web frameworks: FastAPI",
+    "Python web frameworks: Pyramid",
+    "Python testing: unittest",
+    "Python testing: pytest",
+    "Python packaging: pip",
+    "Python packaging: virtualenv",
+    "Python packaging: conda",
+    "Python performance: profiling tools",
+    "Python performance: JIT compilers like Numba",
+    "Python performance: Cython",
+    # Core Computer Science Principles:
+    "Computer Architecture: Cache memory",
+    "Computer Architecture: pipelining",
+    "Operating Systems: Processes vs threads",
+    "Operating Systems: context switching",
+    "Operating Systems: synchronization primitives (semaphores, mutexes)",
+    "Networking: TCP/IP",
+    "Networking: UDP",
+    "Networking: OSI model layers",
+    "Software Engineering: Agile methodologies",
+    "Software Engineering: CI/CD",
+    "Web: HTTP/HTTPS protocols",
+    "Web: WebSockets",
+    "Web: GraphQL",
+    "Security: Hashing",
+    "Security: Digital signatures",
+    "Security: Public Key Infrastructure (PKI)",
+    "Cloud Concepts: Containers like Docker",
+    "Cloud Concepts: Orchestration tools like Kubernetes",
+    # Extended Algorithms & Design:
+    "Data Structures: Fenwick tree (Binary Indexed Tree)",
+    "Data Structures: Disjoint Set Union (DSU)",
+    "String Algorithms: Boyer-Moore string search",
+    "String Algorithms: Aho-Corasick pattern matching",
+    "Geometric Algorithms: Convex hull (Graham's scan, Jarvis march)",
+    "Geometric Algorithms: line intersection",
+    "Randomized Algorithms: Monte Carlo methods",
+    "Randomized Algorithms: Reservoir sampling",
+    "Online Algorithms: Basic concepts",
+    # Databases:
+    "Advanced SQL: CTEs (Common Table Expressions)",
+    "Advanced SQL: window functions",
+    "Database Design: Normalization",
+    "Database Design: ER diagrams",
+    "Database Systems: Indexing mechanisms (B-trees, hash indexes)",
+    # Miscellaneous:
+    "Big Data: Hadoop",
+    "Big Data: Spark",
+    "Machine Learning: CNNs",
+    "Machine Learning: RNNs",
+    "Machine Learning: LSTMs",
+    "Machine Learning: Transformers",
+    "Machine Learning: Transfer learning",
+    "Cloud Services: AWS basics",
+    "Cloud Services: Google Cloud basics",
+    "Cloud Services: Azure basics",
+    "Version Control: Git basics",
+    "Version Control: Git branching, merging, rebasing",
+    "Development Tools: IDEs",
+    "Development Tools: debuggers",
+    # Advanced Mathematics and Statistics:
+    "Stochastic processes: Markov chains",
+    "Game theory basics",
+    "Non-Euclidean geometry",
+    "Cryptography: RSA",
+    "Cryptography: Diffie-Hellman",
+    # Python-Specific:
+    "Python dependency management: pipenv",
+    "Python dependency management: poetry",
+    "Python async web frameworks: FastAPI",
+    "Python async web frameworks: Sanic",
+    "Python data visualization: bokeh",
+    "Python data visualization: plotly",
+    "Python NLP: NLTK",
+    "Python NLP: spaCy",
+    "Python ORM: Django ORM",
+    "Python ORM: Tortoise-ORM",
+    # Core Computer Science Principles:
+    "Virtual Machines and Hypervisors",
+    "Container orchestration: Docker Swarm",
+    "Cloud-native applications: Kubernetes",
+    "Cloud-native applications: Istio",
+    "API gateways: Kong",
+    "API gateways: Nginx",
+    "CI/CD tools: Jenkins",
+    "CI/CD tools: GitLab CI/CD",
+    "CI/CD tools: TravisCI",
+    "Operating Systems: Scheduling",
+    "Operating Systems: Deadlocks",
+    "Operating Systems: File Systems",
+    "Operating Systems: I/O management",
+    # Extended Algorithms & Design:
+    "Travelling Salesman Problem (TSP)",
+    "Maximum Bipartite Matching",
+    "Network Flow: Ford-Fulkerson algorithm",
+    "Dynamic programming: Coin change",
+    "Dynamic programming: Longest Increasing Subsequence",
+    "Streaming algorithms",
+    # Databases:
+    "NoSQL Databases: Cassandra",
+    "NoSQL Databases: MongoDB",
+    "NoSQL Databases: Redis",
+    "Database optimizations: Indexing",
+    "Database optimizations: Query optimization",
+    "Database replication and sharding",
+    # Miscellaneous:
+    "Microservices: Service Mesh",
+    "IoT (Internet of Things) basics",
+    "Edge computing",
+    "Quantum computing basics",
+    "Blockchain basics",
+    "AR (Augmented Reality) basics",
+    "VR (Virtual Reality) basics",
 ]
 
 # Instruction template
@@ -390,6 +525,8 @@ def main(
     top_p=0.9,
     top_k=40,
     max_tokens=1_024,
+    chunk_size=1,
+    run_name="run_0",
 ):
     """Run the textbook generator."""
 
@@ -404,56 +541,67 @@ def main(
         "max_tokens": max_tokens,
     }
 
-    for _ in range(batch_size):
-        # Random selections
-        prompt_template = random.choice(PROMPT_TEMPLATES)
-        course_type = random.choice(COURSE_TYPES)
-        programming_paradigm = random.choice(PROGRAMMING_PARADIGMS)
-        concept = random.choice(CONCEPTS)
-        depth = random.choice(DEPTH)
-        additional_context = random.choice(ADDITIONAL_CONTEXT)
+    chunk_num = 1
+    while True:  # Perpetual loop
+        for _ in range(batch_size):
+            # Random selections
+            prompt_template = random.choice(PROMPT_TEMPLATES)
+            course_type = random.choice(COURSE_TYPES)
+            programming_paradigm = random.choice(PROGRAMMING_PARADIGMS)
+            concept = random.choice(CONCEPTS)
+            depth = random.choice(DEPTH)
+            additional_context = random.choice(ADDITIONAL_CONTEXT)
 
-        # Assembling the prompt:
-        prompt = prompt_template.format(
-            course_type=course_type,
-            programming_paradigm=programming_paradigm,
-            concept=concept,
-            depth=depth,
-            additional_context=additional_context,
+            # Assembling the prompt:
+            prompt = prompt_template.format(
+                course_type=course_type,
+                programming_paradigm=programming_paradigm,
+                concept=concept,
+                depth=depth,
+                additional_context=additional_context,
+            )
+
+            config = {
+                "prompt_template": prompt_template,
+                "course_type": course_type,
+                "programming_paradigm": programming_paradigm,
+                "concept": concept,
+                "depth": depth,
+                "additional_context": additional_context,
+                **model_config,
+            }
+
+            instructions.append(INSTRUCTION_TEMPLATE.format(instruction=prompt))
+            results.append(config)
+
+        llm = LLM(model=model)
+        sampling_params = SamplingParams(
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            max_tokens=max_tokens,
         )
+        outputs = llm.generate(instructions, sampling_params)
 
-        config = {
-            "prompt_template": prompt_template,
-            "course_type": course_type,
-            "programming_paradigm": programming_paradigm,
-            "concept": concept,
-            "depth": depth,
-            "additional_context": additional_context,
-            **model_config,
-        }
+        for i, output in enumerate(outputs):
+            prompt = output.prompt
+            generated_text = output.outputs[0].text
+            results[i]["generated_text"] = generated_text
 
-        instructions.append(INSTRUCTION_TEMPLATE.format(instruction=prompt))
-        results.append(config)
+        def generate_filename(run_name, chunk_num):
+            """Generate a unique filename based on the chunk number and a checksum hash."""
+            hash_string = f"chunk_{run_name}_{chunk_num}"
+            checksum = hashlib.md5(hash_string.encode()).hexdigest()
+            return f"{run_name}_chunk_{chunk_num}_{checksum}.parquet"
 
-    llm = LLM(model=model)
-    sampling_params = SamplingParams(
-        temperature=temperature,
-        top_p=top_p,
-        top_k=top_k,
-        max_tokens=max_tokens,
-    )
-    outputs = llm.generate(instructions, sampling_params)
-
-    for i, output in enumerate(outputs):
-        prompt = output.prompt
-        generated_text = output.outputs[0].text
-        print("-" * 100)
-        print("Prompt: ", prompt)
-        print("Generated Text: ", generated_text)
-        print("-" * 100)
-        results[i]["generated_text"] = generated_text
-
-    print("Final Results = ", results)
+        # If chunk size is reached, save results and clear the results list
+        if len(results) >= chunk_size:
+            df = pd.DataFrame(results)
+            filename = generate_filename(run_name, chunk_num)
+            df.to_parquet(filename, index=False, compression="gzip")
+            chunk_num += 1
+            results.clear()
+            instructions.clear()
 
 
 if __name__ == "__main__":
