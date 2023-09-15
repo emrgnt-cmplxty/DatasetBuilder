@@ -10,10 +10,6 @@ import time
 SOURCE_DIR = "."
 DEST_BUCKET = "gs://my_synthetic_data"
 
-exec(
-    open("smol_trainer/nano_gpt/configurator.py").read()
-)  # overrides from command line or config file
-
 # Keep track of uploaded files
 uploaded_files = set()
 
