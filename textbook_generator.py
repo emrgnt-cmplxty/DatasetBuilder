@@ -1,4 +1,3 @@
-import os
 import hashlib
 import pandas as pd
 from vllm import LLM, SamplingParams
@@ -65,14 +64,14 @@ DEPTH = [
 ]
 
 PROMPT_TEMPLATES = [
-    "In a {course_type} course focused on the {programming_paradigm} paradigm in Python, the topic of {concept} is crucial. Please define a different but related concept {depth} and illustrate it with Python code.",
-    "In a {course_type} course focused on the {programming_paradigm} paradigm in Python, the topic of {concept} is crucial. Please define this concept {depth} and illustrate it with Python code.",
-    "There are {course_type} courses touching upon {programming_paradigm} paradigm which discuss {concept}. What is it, {depth}? Also, provide a relevant Python example.",
-    "Often {course_type} courses touch upon {programming_paradigm} paradigm in Python often discuss {concept}. Can you think of a related concept and explain it {depth}? Also, provide a relevant Python example.",
-    "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore the topic of {concept} {depth} and provide practical Python examples.",
-    "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore a related but different {concept} {depth} and provide practical Python examples.",
-    "With a focus on {programming_paradigm} paradigm, how would you introduce the topic of {concept} in a {course_type} course? Break it down {depth}.",
-    "With a focus on {programming_paradigm} paradigm, how would you introduce a different but related concept to {concept} to our {course_type} course? Break it down {depth}.",
+    "In a {course_type} course focused on the {programming_paradigm} paradigm in Python, the topic of {concept} is crucial. Please define a different but related concept {depth} and illustrate it with Python code.{additional_context}",
+    "In a {course_type} course focused on the {programming_paradigm} paradigm in Python, the topic of {concept} is crucial. Please define this concept {depth} and illustrate it with Python code.{additional_context}",
+    "There are {course_type} courses touching upon {programming_paradigm} paradigm which discuss {concept}. What is it, {depth}? Also, provide a relevant Python example.{additional_context}",
+    "Often {course_type} courses touch upon {programming_paradigm} paradigm in Python often discuss {concept}. Can you think of a related concept and explain it {depth}? Also, provide a relevant Python example.{additional_context}",
+    "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore the topic of {concept} {depth} and provide practical Python examples.{additional_context}",
+    "In modern {course_type} courses, the emphasis on the {programming_paradigm} paradigm in Python has grown. Explore a related but different {concept} {depth} and provide practical Python examples.{additional_context}",
+    "With a focus on {programming_paradigm} paradigm, how would you introduce the topic of {concept} in a {course_type} course? Break it down {depth}.{additional_context}",
+    "With a focus on {programming_paradigm} paradigm, how would you introduce a different but related concept to {concept} to our {course_type} course? Break it down {depth}.{additional_context}",
 ]
 
 CONCEPTS = [
