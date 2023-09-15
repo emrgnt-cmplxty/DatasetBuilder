@@ -8,7 +8,7 @@ import time
 # gcloud auth login YOUR_AUTHENTICATED_USER
 
 SOURCE_DIR = "."
-DEST_BUCKET = "gs://YOUR_BUCKET_NAME"
+DEST_BUCKET = "gs://my_synthetic_data"
 
 exec(
     open("smol_trainer/nano_gpt/configurator.py").read()
